@@ -4,7 +4,7 @@ title: how does visualization design affect decision-making?
 #description: 
 #img: assets/img/7.jpg
 #redirect: https://unsplash.com
-importance: 3
+importance: 4
 category: work
 ---
 
