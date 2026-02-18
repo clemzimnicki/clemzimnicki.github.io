@@ -6,18 +6,16 @@ nav: true
 nav_order: 2
 
 ---
-<p style="font-size:40px;"> how do we perceive and use colors in daily life? </p>
+<p style="font-size:30px;"> how do we perceive and use colors in daily life? </p>
+
+people differ in how they see color (and other visual features). these differences have been well documented. for my dissertation, I am studying these differences, and I aim to understand whether the differences are random, or whether there is some structure in how we differ (for example, if we fall into groups based on how we perceive color).
 
 
-
-
-<p style="font-size:40px;"> how does visualization design affect interpretation? </p>
+<p style="font-size:30px;"> how does visualization design affect interpretation? </p>
 
 the visual features in a data visualization---such as colors, outlines, and symbols---can signficantly affect how people make sense of what they are seeing. in one of my lines of research, I have tried to understand how design can influence interpretation and decision-making. 
 
-with Karen Schloss, I found evidence that people have expectations about what colors should mean in visualizations, even when there is no legend present. for example, people tend to infer that darker, less transparent colors mean larger quantities. 
-
-ultimately, this research can lead to a better understanding of how to make visualizations that are easy to interpret and use in real life. below are some journal articles and conference presentations I've done on this topic!
+ultimately, this research can lead to a better understanding of how to make visualizations that are easy to interpret and use in real life. below are projects I've done on this topic!
 
 
 
