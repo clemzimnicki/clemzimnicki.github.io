@@ -6,14 +6,21 @@ nav: true
 nav_order: 2
 
 ---
-<p style="font-size:40px;"> how do people interpret data visualizations? </p>
-<p style="font-size:30px;"> and how can we make it easier? </p>
+<p style="font-size:40px;"> how do we perceive and use colors in daily life? </p>
 
-the more intuitive a visualization is, the easier it is to understand what information is being communicated. but what does "intuitive" mean? what aspects of a visualization make it more or less intuitive? my research focuses on understanding these questions. research shows people have expectations about what colors should mean in visualizations (even without looking at legends). knowing what these expectations are, and designing visualizations that match them, can make visualizations easier to interpret and therefore more accessible to wider audiences.
 
-all of my projects concern themselves with two biases people have about the meanings of colors in visualizations. the first bias is called the <a href="https://www.tandfonline.com/doi/abs/10.1559/152304089783813918">dark-is-more bias</a>, and leads people to infer that darker regions on maps mean larger quantities. the second is the <a href="https://schlosslab.discovery.wisc.edu/wp-content/uploads/2018/09/SchlossGramazioSilvermanParkerWanginPress.pdf">opaque-is-more bias</a>, which leads people to infer that more opaque (that is, less translucent) regions mean larger quantities. In my work, I have explored how these biases work, including how far they extend and in which situations they may not apply.
 
-below are some projects I have worked on.
+
+<p style="font-size:40px;"> how does visualization design affect interpretation? </p>
+
+the visual features in a data visualization---such as colors, outlines, and symbols---can signficantly affect how people make sense of what they are seeing. in one of my lines of research, I have tried to understand how design can influence interpretation and decision-making. 
+
+with Karen Schloss, I found evidence that people have expectations about what colors should mean in visualizations, even when there is no legend present. for example, people tend to infer that darker, less transparent colors mean larger quantities. 
+
+ultimately, this research can lead to a better understanding of how to make visualizations that are easy to interpret and use in real life. below are some journal articles and conference presentations I've done on this topic!
+
+
+
 
 <!-- pages/projects.md -->
 <div class="projects">

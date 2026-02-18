@@ -8,9 +8,9 @@ cv_pdf: czimnicki_resume.pdf
 permalink: /resume
 ---
 
-<p>Download my resume <a href="assets/pdf/czimnicki_resume.pdf">here</a>.</p>
+<p>Download my resume <a href="assets/pdf/czimnicki_resume_research.pdf">here</a>.</p>
 
-<iframe src="/assets/pdf/czimnicki_resume.pdf" width="100%" height="500px">
+<iframe src="/assets/pdf/czimnicki_resume_research.pdf" width="100%" height="500px">
     </iframe>
 
 <!--<embed
