@@ -307,16 +307,44 @@
     }
 
     .triplet {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: clamp(1.25rem, 2.5vw, 2rem);
+    }
+
+    .triplet-example {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .triplet-example-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: var(--fs-mono);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+    }
+    .triplet-example .swatch {
+      width: clamp(110px, 16vw, 170px);
+    }
+
+    .triplet-options {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: clamp(0.5rem, 1.5vw, 1rem);
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(0.75rem, 2vw, 1.25rem);
+      width: 100%;
+      max-width: clamp(280px, 38vw, 440px);
     }
 
     .swatch {
       appearance: none;
       -webkit-appearance: none;
       border: 1px solid var(--ink);
-      background: var(--accent);
+      background-color: var(--accent);
+      background-size: cover;
+      background-position: center;
       aspect-ratio: 3 / 4;
       cursor: pointer;
       position: relative;
@@ -324,9 +352,19 @@
       padding: 0;
       font: inherit;
       color: inherit;
+      display: block;
     }
     .swatch:hover {
       transform: translateY(-4px);
+    }
+    .swatch-example {
+      cursor: default;
+    }
+    .swatch-example:hover {
+      transform: none;
+    }
+    .swatch-example::after {
+      display: none;
     }
     .swatch:focus-visible {
       outline: 2px solid var(--accent);
@@ -789,23 +827,28 @@
       </div>
     </section>
 
-    <!-- INTERACTIVE TRIADIC SIMILARITY DEMO -->
+    <!-- INTERACTIVE SIMILARITY JUDGMENT DEMO -->
     <section class="boundary">
       <div class="boundary-grid">
         <div>
           <div class="boundary-label reveal">A small demonstration</div>
           <h2 class="boundary-prompt reveal reveal-delay-1">
-            Which one is the <em>odd one out?</em>
+            Which one is <em>most similar</em> to the example?
           </h2>
           <p class="boundary-instructions reveal reveal-delay-2">
-            Pick the color you'd group separately from the other two. There's no correct answer — that's what makes the data informative. My dissertation builds up <em>triadic similarity judgments</em> like these across hundreds of triplets and many participants to reconstruct how each person's perceptual color space is shaped, then tests whether those differences show up in interference and categorization tasks too.
+            Compare the two options to the example above them, and pick the one that feels closer. There's no correct answer — that's what makes the data informative. My dissertation builds up <em>pairwise similarity judgments</em> like these across many trials and many participants to reconstruct how each person's perceptual color space is shaped, then tests whether those differences show up in interference and categorization tasks too.
           </p>
         </div>
         <div class="reveal reveal-delay-3">
-          <div class="triplet" id="triplet" role="group" aria-label="Triadic color similarity task — pick the odd one out">
-            <button class="swatch" data-idx="0" type="button" aria-label="Color A"></button>
-            <button class="swatch" data-idx="1" type="button" aria-label="Color B"></button>
-            <button class="swatch" data-idx="2" type="button" aria-label="Color C"></button>
+          <div class="triplet" id="triplet" role="group" aria-label="Color similarity judgment task — pick the option most similar to the example">
+            <div class="triplet-example">
+              <span class="triplet-example-label">example</span>
+              <div class="swatch swatch-example" id="exampleSwatch" aria-label="Example color"></div>
+            </div>
+            <div class="triplet-options">
+              <button class="swatch" data-idx="0" type="button" aria-label="Option A"></button>
+              <button class="swatch" data-idx="1" type="button" aria-label="Option B"></button>
+            </div>
           </div>
           <div class="triplet-controls">
             <span class="triplet-counter" id="tripletCounter">trial 1 / 3</span>
@@ -814,7 +857,7 @@
           <div class="boundary-result" id="boundaryResult" role="status" aria-live="polite">
             <div class="boundary-result-label" id="resultLabel">your choice</div>
             <div class="boundary-result-value" id="resultValue">—</div>
-            <p id="resultBody">A different participant would likely pick differently. That disagreement, replicated across hundreds of triplets, is the signal my dissertation analyzes.</p>
+            <p id="resultBody">A different participant would likely pick differently. That disagreement, replicated across hundreds of trials, is the signal my dissertation analyzes.</p>
           </div>
         </div>
       </div>
@@ -1005,38 +1048,48 @@
   </footer>
 
   <script>
-    // ─── Triadic similarity demo ───
+    // ─── Pairwise similarity-judgment demo ───
     (function() {
+      // Each trial: an `example` color and two `options`.
+      // Hex codes (no '#') correspond to files in assets/color_triplets/<HEX>.png.
       const trials = [
         {
-          colors: ['#C53428', '#D85820', '#DE7E18'],
-          reveal: "Around the red–orange boundary, different people group the middle swatch differently. There's no key telling you the right answer — and there isn't one in my experiments either. The disagreement is what carries the information."
+          example: 'EA1D1D',
+          options: ['E81A4B', 'CC4F1B'],
+          reveal: "Right at the red boundary, people split. Whether this vivid red feels closer to a pink-tinged red or an orange-tinged red depends on how your visual system carves up this part of color space — and on language, context, and recent exposure."
         },
         {
-          colors: ['#2A8062', '#2A7E9C', '#2A4A98'],
-          reveal: "The blue–green region is one of the most-studied disagreements in color perception. Different languages even partition it differently. Where you grouped these is a small fingerprint of how your visual system chunks this part of color space."
+          example: 'DB1F9D',
+          options: ['E31B73', 'B8509E'],
+          reveal: "Pink and magenta sit on either side of a fuzzy boundary. Two participants looking at the same hot pink will reliably disagree about which neighbor it belongs with. That disagreement is the signal — not noise."
         },
         {
-          colors: ['#B43E62', '#A33C7C', '#5A3FB2'],
-          reveal: "Three triplets is a tiny taste. A real study gives you hundreds. Aggregated, those judgments reconstruct each participant's perceptual color space — and across participants, the spaces don't match. Characterizing the structure of how they differ, and whether those differences predict performance on interference and categorization tasks, is what my dissertation does."
+          example: 'F7A75A',
+          options: ['F1A78A', 'FBA714'],
+          reveal: "Three trials is a tiny taste. A real study gives you hundreds. Aggregated, those judgments reconstruct each participant's perceptual color space — and across participants, the spaces don't match. Characterizing the structure of those differences, and whether they predict performance on interference and categorization tasks, is what my dissertation does."
         }
       ];
 
-      const tripletEl   = document.getElementById('triplet');
-      const counterEl   = document.getElementById('tripletCounter');
-      const nextBtn     = document.getElementById('tripletNext');
-      const resultPanel = document.getElementById('boundaryResult');
-      const resultLabel = document.getElementById('resultLabel');
-      const resultValue = document.getElementById('resultValue');
-      const resultBody  = document.getElementById('resultBody');
-      const swatches    = tripletEl.querySelectorAll('.swatch');
+      const SWATCH_DIR = 'assets/color_triplets/';
+      const swatchUrl  = (hex) => `${SWATCH_DIR}${hex}.png`;
+
+      const tripletEl    = document.getElementById('triplet');
+      const exampleEl    = document.getElementById('exampleSwatch');
+      const counterEl    = document.getElementById('tripletCounter');
+      const nextBtn      = document.getElementById('tripletNext');
+      const resultPanel  = document.getElementById('boundaryResult');
+      const resultLabel  = document.getElementById('resultLabel');
+      const resultValue  = document.getElementById('resultValue');
+      const resultBody   = document.getElementById('resultBody');
+      const optionEls    = tripletEl.querySelectorAll('.triplet-options .swatch');
 
       let current = 0;
 
       function renderTrial(idx) {
         const t = trials[idx];
-        swatches.forEach((s, i) => {
-          s.style.background = t.colors[i];
+        exampleEl.style.backgroundImage = `url('${swatchUrl(t.example)}')`;
+        optionEls.forEach((s, i) => {
+          s.style.backgroundImage = `url('${swatchUrl(t.options[i])}')`;
           s.classList.remove('selected');
         });
         counterEl.textContent = `trial ${idx + 1} / ${trials.length}`;
@@ -1045,12 +1098,12 @@
       }
 
       function handleSelect(swatch) {
-        swatches.forEach(s => s.classList.remove('selected'));
+        optionEls.forEach(s => s.classList.remove('selected'));
         swatch.classList.add('selected');
 
-        const letter = ['A', 'B', 'C'][parseInt(swatch.dataset.idx, 10)];
+        const letter = ['A', 'B'][parseInt(swatch.dataset.idx, 10)];
         resultLabel.textContent = `your choice — trial ${current + 1}`;
-        resultValue.textContent = `You picked color ${letter} as the odd one out.`;
+        resultValue.textContent = `You picked option ${letter} as the closer match.`;
         resultBody.textContent = trials[current].reveal;
         resultPanel.classList.add('shown');
 
@@ -1064,7 +1117,7 @@
       }
 
       tripletEl.addEventListener('click', (e) => {
-        const sw = e.target.closest('.swatch');
+        const sw = e.target.closest('.triplet-options .swatch');
         if (sw) handleSelect(sw);
       });
 
