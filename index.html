@@ -25,7 +25,7 @@
       --cool:         #2C4756;  /* deep teal — used sparingly */
 
       /* type scale */
-      --fs-display: clamp(3.5rem, 9vw, 8.5rem);
+      --fs-display: clamp(2.25rem, 5.5vw, 4.75rem);
       --fs-h1:      clamp(2.2rem, 4.5vw, 3.6rem);
       --fs-h2:      clamp(1.5rem, 2.5vw, 2.1rem);
       --fs-lead:    clamp(1.15rem, 1.6vw, 1.4rem);
@@ -203,6 +203,37 @@
     .hero-lead strong {
       color: var(--ink);
       font-weight: 500;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: clamp(2rem, 5vw, 4.5rem);
+      align-items: start;
+    }
+    .hero-text { min-width: 0; }
+
+    .hero-portrait {
+      width: clamp(180px, 22vw, 280px);
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      display: block;
+      border: 1px solid var(--rule);
+      box-shadow: 8px 8px 0 var(--paper-deep);
+      filter: saturate(0.95);
+      margin-top: 0.25rem;
+    }
+
+    @media (max-width: 760px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+        gap: 1.75rem;
+      }
+      .hero-portrait {
+        width: 140px;
+        box-shadow: 5px 5px 0 var(--paper-deep);
+        order: -1;
+      }
     }
 
     /* ─────────────  COLOR CHIP COMPONENT  ───────────── */
@@ -738,15 +769,24 @@
 
     <!-- HERO -->
     <section class="hero">
-      <div class="hero-eyebrow reveal">
-        Clementine Zimnicki &nbsp;/&nbsp; PhD candidate &nbsp;/&nbsp; UW–Madison
+      <div class="hero-grid">
+        <div class="hero-text">
+          <div class="hero-eyebrow reveal">
+            Clementine Zimnicki &nbsp;/&nbsp; PhD candidate &nbsp;/&nbsp; UW–Madison
+          </div>
+          <h1 class="hero-title reveal reveal-delay-1">
+            You do not see the same <em>red</em> I see.
+          </h1>
+          <p class="hero-lead reveal reveal-delay-2">
+            I'm a behavioral researcher studying <strong>individual differences in color perception</strong> and how <strong>visualization design shapes interpretation</strong> — that is, how the visual choices we make change what people understand and decide. I work end-to-end: research questions, study design, data, and the writing that makes the findings useful to someone who isn't me.
+          </p>
+        </div>
+        <img class="hero-portrait reveal reveal-delay-1"
+             src="assets/img/clem_pic.png"
+             alt="Portrait of Clementine Zimnicki"
+             width="958" height="932"
+             loading="eager" decoding="async">
       </div>
-      <h1 class="hero-title reveal reveal-delay-1">
-        You do not see the same <em>red</em> I see.
-      </h1>
-      <p class="hero-lead reveal reveal-delay-2">
-        I'm a behavioral researcher studying <strong>individual differences in color perception</strong> and how <strong>visualization design shapes interpretation</strong> — that is, how the visual choices we make change what people understand and decide. I work end-to-end: research questions, study design, data, and the writing that makes the findings useful to someone who isn't me.
-      </p>
     </section>
 
     <!-- INTERACTIVE TRIADIC SIMILARITY DEMO -->
