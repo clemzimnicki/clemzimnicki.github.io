@@ -394,16 +394,11 @@
       text-transform: uppercase;
       color: var(--ink-soft);
     }
-    .triplet-example .swatch {
-      width: clamp(150px, 16vw, 150px);
-    }
-
     .triplet-options {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 150px 150px;
       gap: clamp(0.75rem, 2vw, 1.25rem);
-      width: 100%;
-      max-width: clamp(150px, 38vw, 150px);
+      justify-content: center;
     }
 
     .swatch {
@@ -413,7 +408,8 @@
       background-color: var(--accent);
       background-size: cover;
       background-position: center;
-      aspect-ratio: 3 / 4;
+      width: 150px;
+      height: 150px;
       cursor: pointer;
       position: relative;
       transition: transform 0.25s cubic-bezier(0.5, 0, 0, 1);
