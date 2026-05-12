@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clementine Zimnicki — color, perception, and design</title>
+  <meta name="description" content="Clementine Zimnicki is a PhD researcher studying individual differences in color perception and how visualization design shapes interpretation." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..900,0..100,0..1&family=Manrope:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      /* palette — warm, restrained, designed-by-a-color-person */
+      --paper:        #F2EAD7;
+      --paper-deep:   #E8DCC0;
+      --paper-edge:   #D9C8A8;
+      --ink:          #1A1410;
+      --ink-soft:     #5C4A3D;
+      --ink-faint:    #9C8770;
+      --rule:         #C9B89A;
+      --accent:       #D4582A;  /* clementine */
+      --accent-deep:  #A23E1F;
+      --cool:         #2C4756;  /* deep teal — used sparingly */
+
+      /* type scale */
+      --fs-display: clamp(3.5rem, 9vw, 8.5rem);
+      --fs-h1:      clamp(2.2rem, 4.5vw, 3.6rem);
+      --fs-h2:      clamp(1.5rem, 2.5vw, 2.1rem);
+      --fs-lead:    clamp(1.15rem, 1.6vw, 1.4rem);
+      --fs-body:    1.0625rem;
+      --fs-small:   0.875rem;
+      --fs-mono:    0.75rem;
+
+      /* spacing */
+      --gutter: clamp(1.5rem, 5vw, 5rem);
+      --section-y: clamp(4rem, 10vw, 9rem);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: 'Manrope', system-ui, sans-serif;
+      font-size: var(--fs-body);
+      line-height: 1.55;
+      font-weight: 400;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      overflow-x: hidden;
+    }
+
+    /* subtle paper grain — gives the cream surface texture */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.35;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.1 0 0 0 0 0.08 0 0 0 0 0.06 0 0 0 0.5 0'/></filter><rect width='200' height='200' filter='url(%23n)' opacity='0.4'/></svg>");
+      mix-blend-mode: multiply;
+    }
+
+    main, header, footer { position: relative; z-index: 2; }
+
+    a {
+      color: var(--ink);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+    a:hover { color: var(--accent); }
+    a:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+      border-radius: 2px;
+    }
+
+    /* ─────────────  HEADER  ───────────── */
+    .site-header {
+      padding: 1.75rem var(--gutter);
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      border-bottom: 1px solid var(--rule);
+      position: sticky;
+      top: 0;
+      background: var(--paper);
+      z-index: 50;
+    }
+    .site-header::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: var(--paper);
+      opacity: 0.92;
+      backdrop-filter: blur(8px);
+      z-index: -1;
+    }
+
+    .masthead {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: var(--fs-mono);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+    .masthead-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    nav.primary {
+      display: flex;
+      gap: 2rem;
+      font-size: var(--fs-small);
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.08em;
+      text-transform: lowercase;
+    }
+    nav.primary a {
+      color: var(--ink-soft);
+      position: relative;
+      padding: 0.3rem 0;
+    }
+    nav.primary a::after {
+      content: "";
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 1px;
+      background: var(--accent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s cubic-bezier(0.65, 0, 0.35, 1);
+    }
+    nav.primary a:hover { color: var(--ink); }
+    nav.primary a:hover::after { transform: scaleX(1); }
+
+    @media (max-width: 640px) {
+      nav.primary { gap: 1rem; }
+    }
+
+    /* ─────────────  HERO  ───────────── */
+    .hero {
+      padding: clamp(3rem, 8vw, 7rem) var(--gutter) clamp(4rem, 9vw, 8rem);
+      max-width: 1400px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .hero-eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: var(--fs-mono);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      margin-bottom: 2.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .hero-eyebrow::before {
+      content: "";
+      width: 2.5rem;
+      height: 1px;
+      background: var(--ink-soft);
+    }
+
+    .hero-title {
+      font-family: 'Fraunces', serif;
+      font-weight: 300;
+      font-size: var(--fs-display);
+      line-height: 0.92;
+      letter-spacing: -0.035em;
+      font-variation-settings: "SOFT" 50, "WONK" 0, "opsz" 144;
+      margin-bottom: 2.5rem;
+      max-width: 13ch;
+    }
+    .hero-title em {
+      font-style: italic;
+      font-weight: 300;
+      font-variation-settings: "SOFT" 100, "WONK" 1, "opsz" 144;
+      color: var(--accent);
+    }
+
+    .hero-lead {
+      font-family: 'Fraunces', serif;
+      font-weight: 300;
+      font-size: var(--fs-lead);
+      line-height: 1.45;
+      max-width: 38rem;
+      color: var(--ink-soft);
+      margin-top: 1.5rem;
+    }
+    .hero-lead strong {
+      color: var(--ink);
+      font-weight: 500;
+    }
+
+    /* ─────────────  COLOR CHIP COMPONENT  ───────────── */
+    .chip {
+      display: inline-flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: var(--fs-mono);
+      letter-spacing: 0.05em;
+    }
+    .chip-swatch {
+      width: 3rem;
+      height: 4rem;
+      background: var(--accent);
+      border: 1px solid var(--ink);
+      position: relative;
+    }
+    .chip-code {
+      color: var(--ink-soft);
+      text-transform: uppercase;
+    }
+
+    /* ─────────────  INTERACTIVE: BOUNDARY  ───────────── */
+    .boundary {
+      padding: var(--section-y) var(--gutter);
+      max-width: 1400px;
+      margin: 0 auto;
+      border-top: 1px solid var(--rule);
+    }
+
+    .boundary-grid {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: clamp(2rem, 5vw, 5rem);
+      align-items: start;
+    }
+
+    @media (max-width: 880px) {
+      .boundary-grid { grid-template-columns: 1fr; }
+    }
+
+    .boundary-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: var(--fs-mono);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      margin-bottom: 1.5rem;
+    }
+
+    .boundary-prompt {
+      font-family: 'Fraunces', serif;
+      font-weight: 300;
+      font-size: var(--fs-h2);
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      font-variation-settings: "SOFT" 70, "WONK" 0, "opsz" 60;
+    }
+
+    .boundary-prompt em {
+      font-style: italic;
+      color: var(--accent);
+      font-variation-settings: "SOFT" 100, "WONK" 1, "opsz" 60;
+    }
+
+    .boundary-instructions {
+      margin-top: 1.5rem;
+      color: var(--ink-soft);
+      max-width: 28rem;
+    }
+
+    .triplet {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: clamp(0.5rem, 1.5vw, 1rem);
+    }
+
+    .swatch {
+      appearance: none;
+      -webkit-appearance: none;
+      border: 1px solid var(--ink);
+      background: var(--accent);
+      aspect-ratio: 3 / 4;
+      cursor: pointer;
+      position: relative;
+      transition: transform 0.25s cubic-bezier(0.5, 0, 0, 1);
+      padding: 0;
+      font: inherit;
+      color: inherit;
+    }
+    .swatch:hover {
+      transform: translateY(-4px);
+    }
+    .swatch:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 6px;
+    }
+    .swatch::after {
+      content: "";
+      position: absolute;
+      inset: -7px;
+      border: 2px solid var(--ink);
+      opacity: 0;
+      transition: opacity 0.2s ease, inset 0.25s cubic-bezier(0.5, 0, 0, 1);
+      pointer-events: none;
+    }
+    .swatch.selected {
+      transform: translateY(-4px);
+    }
+    .swatch.selected::after {
+      opacity: 1;
+      inset: -9px;
+    }
+
+    .triplet-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1.75rem;
+      gap: 1rem;
+    }
+    .triplet-counter {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: var(--fs-mono);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+    }
+    .triplet-next {
+      appearance: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.4rem 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: var(--fs-mono);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink);
+      border-bottom: 1px solid var(--ink);
+      transition: color 0.2s, border-color 0.2s, padding-right 0.2s;
+    }
+    .triplet-next:hover:not(:disabled) {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+      padding-right: 0.4rem;
+    }
+    .triplet-next:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 4px;
+    }
+    .triplet-next:disabled {
+      opacity: 0.35;
+      cursor: default;
+    }
+
+    .boundary-result {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background: var(--paper-deep);
+      border-left: 3px solid var(--accent);
+      max-width: 38rem;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.5s, transform 0.5s;
+    }
+    .boundary-result.shown {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .boundary-result-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: var(--fs-mono);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent-deep);
+      margin-bottom: 0.5rem;
+    }
+    .boundary-result-value {
+      font-family: 'Fraunces', serif;
+      font-size: 1.3rem;
+      font-weight: 400;
+      margin-bottom: 0.5rem;
+    }
+    .boundary-result p {
+      color: var(--ink-soft);
+      font-size: var(--fs-small);
+    }
+
+    /* ─────────────  WORK / RESEARCH  ───────────── */
+    .work {
+      padding: var(--section-y) var(--gutter);
+      max-width: 1400px;
+      margin: 0 auto;
+      border-top: 1px solid var(--rule);
+    }
+
+    .section-head {
+      display: flex;
+      align-items: baseline;
+      gap: 1.5rem;
+      margin-bottom: clamp(2.5rem, 5vw, 4rem);
+      flex-wrap: wrap;
+    }
+    .section-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: var(--fs-mono);
+      letter-spacing: 0.18em;
+      color: var(--ink-soft);
+    }
+    .section-title {
+      font-family: 'Fraunces', serif;
+      font-weight: 300;
+      font-size: var(--fs-h1);
+      letter-spacing: -0.025em;
+      line-height: 1;
+      font-variation-settings: "SOFT" 50, "opsz" 100;
+    }
+    .section-title em {
+      font-style: italic;
+      color: var(--accent);
+      font-variation-settings: "SOFT" 100, "WONK" 1, "opsz" 100;
+    }
+
+    .research-areas {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+
+    .area {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: clamp(1.5rem, 4vw, 3.5rem);
+      align-items: start;
+      padding: clamp(2rem, 4vw, 3rem) 0;
+      border-top: 1px solid var(--rule);
+      position: relative;
+    }
+    .area:last-child { border-bottom: 1px solid var(--rule); }
+
+    @media (max-width: 760px) {
+      .area {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+      }
+      .area .chip { order: -1; }
+    }
+
+    .area-chip .chip-swatch {
+      width: 4.5rem;
+      height: 6rem;
+    }
+    .area:nth-child(1) .area-chip .chip-swatch { background: #D4582A; }
+    .area:nth-child(2) .area-chip .chip-swatch { background: #2C4756; }
+    .area:nth-child(3) .area-chip .chip-swatch { background: #7A8E62; }
+
+    .area-body h3 {
+      font-family: 'Fraunces', serif;
+      font-weight: 400;
+      font-size: clamp(1.3rem, 2.2vw, 1.75rem);
+      letter-spacing: -0.015em;
+      line-height: 1.1;
+      margin-bottom: 0.75rem;
+      max-width: 30ch;
+      font-variation-settings: "SOFT" 50, "opsz" 60;
+    }
+    .area-body p {
+      color: var(--ink-soft);
+      max-width: 50ch;
+    }
+    .area-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: var(--fs-mono);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      white-space: nowrap;
+      padding-top: 0.5rem;
+    }
+    @media (max-width: 760px) {
+      .area-tag { padding-top: 0; }
+    }
+
+    /* ─────────────  CREDENTIALS  ───────────── */
+    .credentials {
+      padding: var(--section-y) var(--gutter);
+      max-width: 1400px;
+      margin: 0 auto;
+      border-top: 1px solid var(--rule);
+    }
+
+    .cred-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: clamp(1.5rem, 4vw, 3rem);
+      margin-top: 3rem;
+    }
+    .cred-item {
+      border-top: 2px solid var(--ink);
+      padding-top: 1rem;
+    }
+    .cred-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: var(--fs-mono);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      margin-bottom: 0.5rem;
+    }
+    .cred-value {
+      font-family: 'Fraunces', serif;
+      font-size: 1.15rem;
+      font-weight: 400;
+      line-height: 1.3;
+      font-variation-settings: "SOFT" 50, "opsz" 30;
+    }
+    .cred-value-mute {
+      color: var(--ink-soft);
+      font-size: var(--fs-small);
+      font-family: 'Manrope', sans-serif;
+      margin-top: 0.3rem;
+    }
+
+    /* ─────────────  PUBLICATIONS  ───────────── */
+    .publications {
+      padding: var(--section-y) var(--gutter);
+      max-width: 1400px;
+      margin: 0 auto;
+      border-top: 1px solid var(--rule);
+    }
+
+    .pub-list {
+      list-style: none;
+      counter-reset: pub;
+    }
+    .pub {
+      counter-increment: pub;
+      display: grid;
+      grid-template-columns: 4rem 1fr auto;
+      gap: 1.5rem;
+      padding: 1.75rem 0;
+      border-top: 1px solid var(--rule);
+      align-items: baseline;
+    }
+    .pub:last-child { border-bottom: 1px solid var(--rule); }
+
+    @media (max-width: 760px) {
+      .pub {
+        grid-template-columns: 3rem 1fr;
+      }
+      .pub-status { grid-column: 1 / -1; padding-left: 3rem; padding-top: 0.5rem; }
+    }
+
+    .pub::before {
+      content: counter(pub, decimal-leading-zero);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: var(--fs-mono);
+      letter-spacing: 0.1em;
+      color: var(--ink-faint);
+    }
+    .pub-content {
+      font-family: 'Fraunces', serif;
+      font-size: 1.05rem;
+      line-height: 1.4;
+      font-weight: 400;
+      font-variation-settings: "SOFT" 50, "opsz" 30;
+    }
+    .pub-content .me {
+      font-weight: 600;
+      color: var(--accent-deep);
+    }
+    .pub-content .title {
+      font-style: italic;
+      color: var(--ink);
+    }
+    .pub-content .venue {
+      color: var(--ink-soft);
+      font-size: 0.95rem;
+      display: block;
+      margin-top: 0.3rem;
+      font-style: normal;
+    }
+    .pub-status {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: var(--fs-mono);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      white-space: nowrap;
+    }
+    .pub-status.review { color: var(--accent-deep); }
+
+    /* ─────────────  CONTACT / OUTRO  ───────────── */
+    .contact {
+      padding: var(--section-y) var(--gutter);
+      max-width: 1400px;
+      margin: 0 auto;
+      border-top: 1px solid var(--rule);
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: clamp(2rem, 5vw, 5rem);
+      align-items: start;
+    }
+    @media (max-width: 760px) {
+      .contact-grid { grid-template-columns: 1fr; }
+    }
+
+    .contact-headline {
+      font-family: 'Fraunces', serif;
+      font-weight: 300;
+      font-size: var(--fs-h1);
+      line-height: 0.98;
+      letter-spacing: -0.03em;
+      font-variation-settings: "SOFT" 70, "opsz" 100;
+      max-width: 16ch;
+    }
+    .contact-headline em {
+      font-style: italic;
+      color: var(--accent);
+      font-variation-settings: "SOFT" 100, "WONK" 1, "opsz" 100;
+    }
+
+    .contact-aside {
+      font-size: var(--fs-small);
+      color: var(--ink-soft);
+      line-height: 1.6;
+      padding-top: 0.6rem;
+    }
+    .contact-aside p { margin-bottom: 0.8rem; }
+
+    .contact-links {
+      margin-top: 2.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .contact-link {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 1.5rem;
+      align-items: baseline;
+      padding: 1rem 0;
+      border-top: 1px solid var(--rule);
+      font-family: 'Fraunces', serif;
+      font-size: 1.4rem;
+      font-weight: 400;
+      transition: background 0.2s, padding-left 0.2s;
+      font-variation-settings: "SOFT" 50, "opsz" 60;
+    }
+    .contact-link:last-of-type { border-bottom: 1px solid var(--rule); }
+    .contact-link:hover {
+      padding-left: 0.5rem;
+    }
+    .contact-link-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: var(--fs-mono);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      width: 5rem;
+    }
+    .contact-link-arrow {
+      font-family: 'Fraunces', serif;
+      transition: transform 0.2s;
+      color: var(--accent);
+    }
+    .contact-link:hover .contact-link-arrow {
+      transform: translateX(6px);
+    }
+
+    /* ─────────────  FOOTER  ───────────── */
+    footer {
+      padding: 3rem var(--gutter);
+      border-top: 1px solid var(--rule);
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 1rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: var(--fs-mono);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+    }
+    footer .colophon { max-width: 50ch; }
+
+    /* ─────────────  REVEAL ANIMATIONS  ───────────── */
+    @media (prefers-reduced-motion: no-preference) {
+      .reveal {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+                    transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .reveal.in {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .reveal-delay-1 { transition-delay: 0.1s; }
+      .reveal-delay-2 { transition-delay: 0.2s; }
+      .reveal-delay-3 { transition-delay: 0.3s; }
+      .reveal-delay-4 { transition-delay: 0.4s; }
+    }
+
+    ::selection {
+      background: var(--accent);
+      color: var(--paper);
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="masthead">
+      <span class="masthead-dot" aria-hidden="true"></span>
+      <span>CZ &nbsp;·&nbsp; Madison, WI</span>
+    </div>
+    <nav class="primary" aria-label="primary">
+      <a href="#work">work</a>
+      <a href="#cv">cv</a>
+      <a href="#writing">writing</a>
+      <a href="#contact">contact</a>
+    </nav>
+  </header>
+
+  <main>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-eyebrow reveal">
+        Clementine Zimnicki &nbsp;/&nbsp; PhD candidate &nbsp;/&nbsp; UW–Madison
+      </div>
+      <h1 class="hero-title reveal reveal-delay-1">
+        You do not see the same <em>red</em> I see.
+      </h1>
+      <p class="hero-lead reveal reveal-delay-2">
+        I'm a behavioral researcher studying <strong>individual differences in color perception</strong> and how <strong>visualization design shapes interpretation</strong> — that is, how the visual choices we make change what people understand and decide. I work end-to-end: research questions, study design, data, and the writing that makes the findings useful to someone who isn't me.
+      </p>
+    </section>
+
+    <!-- INTERACTIVE TRIADIC SIMILARITY DEMO -->
+    <section class="boundary">
+      <div class="boundary-grid">
+        <div>
+          <div class="boundary-label reveal">A small demonstration</div>
+          <h2 class="boundary-prompt reveal reveal-delay-1">
+            Which one is the <em>odd one out?</em>
+          </h2>
+          <p class="boundary-instructions reveal reveal-delay-2">
+            Pick the color you'd group separately from the other two. There's no correct answer — that's what makes the data informative. My dissertation builds up <em>triadic similarity judgments</em> like these across hundreds of triplets and many participants to reconstruct how each person's perceptual color space is shaped, then tests whether those differences show up in interference and categorization tasks too.
+          </p>
+        </div>
+        <div class="reveal reveal-delay-3">
+          <div class="triplet" id="triplet" role="group" aria-label="Triadic color similarity task — pick the odd one out">
+            <button class="swatch" data-idx="0" type="button" aria-label="Color A"></button>
+            <button class="swatch" data-idx="1" type="button" aria-label="Color B"></button>
+            <button class="swatch" data-idx="2" type="button" aria-label="Color C"></button>
+          </div>
+          <div class="triplet-controls">
+            <span class="triplet-counter" id="tripletCounter">trial 1 / 3</span>
+            <button class="triplet-next" id="tripletNext" type="button" disabled>try another →</button>
+          </div>
+          <div class="boundary-result" id="boundaryResult" role="status" aria-live="polite">
+            <div class="boundary-result-label" id="resultLabel">your choice</div>
+            <div class="boundary-result-value" id="resultValue">—</div>
+            <p id="resultBody">A different participant would likely pick differently. That disagreement, replicated across hundreds of triplets, is the signal my dissertation analyzes.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WORK -->
+    <section class="work" id="work">
+      <div class="section-head">
+        <span class="section-num">§ 01</span>
+        <h2 class="section-title">Three threads of <em>research</em></h2>
+      </div>
+
+      <div class="research-areas">
+        <article class="area">
+          <div class="area-chip chip">
+            <div class="chip-swatch"></div>
+            <div class="chip-code">CZ&middot;01 / D54</div>
+          </div>
+          <div class="area-body">
+            <h3>Individual differences in color perception</h3>
+            <p>My dissertation. People differ in how they see color — that much is well documented. The open question is whether those differences are random, or whether there's structure to how we cluster. I use triadic similarity judgments to reconstruct each participant's perceptual color space, then test whether those perceptual differences predict behavior on interference and categorization-generalization tasks.</p>
+          </div>
+          <div class="area-tag">dissertation</div>
+        </article>
+
+        <article class="area">
+          <div class="area-chip chip">
+            <div class="chip-swatch"></div>
+            <div class="chip-code">CZ&middot;02 / 2C4</div>
+          </div>
+          <div class="area-body">
+            <h3>How visualization design shapes interpretation</h3>
+            <p>The visual features in a data visualization — hue, lightness, granularity, outlines — change what people infer, even with no key telling them what the visualization means. In one line of work, I ask participants to decide which side of an unlabeled colormap holds <em>more data</em>, with no definition of "more." Published work on colormap semantics; ongoing work with Sandia on hazard maps and evacuation decisions.</p>
+          </div>
+          <div class="area-tag">design × cognition</div>
+        </article>
+
+        <article class="area">
+          <div class="area-chip chip">
+            <div class="chip-swatch"></div>
+            <div class="chip-code">CZ&middot;03 / 7A8</div>
+          </div>
+          <div class="area-body">
+            <h3>Applied research &amp; program evaluation</h3>
+            <p>At Sandia, I design surveys and conduct interviews to evaluate program effectiveness across three concurrent initiatives. The work taught me how research changes when the deliverable is an actionable recommendation, not a paper — how to write for a program director rather than a reviewer.</p>
+          </div>
+          <div class="area-tag">applied / industry</div>
+        </article>
+      </div>
+    </section>
+
+    <!-- CREDENTIALS -->
+    <section class="credentials" id="cv">
+      <div class="section-head">
+        <span class="section-num">§ 02</span>
+        <h2 class="section-title">At a <em>glance</em></h2>
+      </div>
+
+      <div class="cred-grid">
+        <div class="cred-item">
+          <div class="cred-label">current</div>
+          <div class="cred-value">PhD candidate, Psychology</div>
+          <div class="cred-value-mute">University of Wisconsin–Madison · Knowledge &amp; Concepts Lab · expected Dec 2026</div>
+        </div>
+        <div class="cred-item">
+          <div class="cred-label">also</div>
+          <div class="cred-value">R&amp;D Intern</div>
+          <div class="cred-value-mute">Sandia National Laboratories · since June 2024</div>
+        </div>
+        <div class="cred-item">
+          <div class="cred-label">before</div>
+          <div class="cred-value">B.S. Psychology (Cognitive Neuroscience)</div>
+          <div class="cred-value-mute">University of Illinois Urbana–Champaign · 2020</div>
+        </div>
+        <div class="cred-item">
+          <div class="cred-label">methods</div>
+          <div class="cred-value">Mixed-methods, end-to-end</div>
+          <div class="cred-value-mute">Experimental design, 1:1 interviews, surveys (Qualtrics), A/B testing, mixed-effects models, GLM, large-N crowdsourcing</div>
+        </div>
+        <div class="cred-item">
+          <div class="cred-label">tools</div>
+          <div class="cred-value">R, Python, JavaScript, jsPsych</div>
+          <div class="cred-value-mute">SQL, MATLAB, LaTeX, Adobe CC, Qualtrics, GitHub</div>
+        </div>
+        <div class="cred-item">
+          <div class="cred-label">also organizes</div>
+          <div class="cred-value">VisXVision Workshop</div>
+          <div class="cred-value-mute">Annual workshop at Vision Sciences Society &amp; IEEE VIS, connecting vision scientists with viz researchers</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PUBLICATIONS -->
+    <section class="publications" id="writing">
+      <div class="section-head">
+        <span class="section-num">§ 03</span>
+        <h2 class="section-title">Selected <em>publications</em></h2>
+      </div>
+
+      <ol class="pub-list">
+        <li class="pub">
+          <div class="pub-content">
+            <span class="me">Zimnicki, C.</span> &amp; Matzen, L.
+            <span class="title">The influence of between- and within-map lightness variation on decision making with hazard maps.</span>
+            <span class="venue">Manuscript under review</span>
+          </div>
+          <div class="pub-status review">under review</div>
+        </li>
+        <li class="pub">
+          <div class="pub-content">
+            <span class="me">Zimnicki, C.</span>, Tseng, C., Szafir, D. A., &amp; Schloss, K. B.
+            <span class="title">Effects of data distribution and granularity on color semantics for colormap data visualizations.</span>
+            <span class="venue">2023</span>
+          </div>
+          <div class="pub-status">2023</div>
+        </li>
+        <li class="pub">
+          <div class="pub-content">
+            <span class="me">Zimnicki, C.</span>, Tseng, C., Szafir, D. A., &amp; Schloss, K. B.
+            <span class="title">Hue variation masks effects of lightness on interpretations of colormap data visualizations.</span>
+            <span class="venue">2023</span>
+          </div>
+          <div class="pub-status">2023</div>
+        </li>
+        <li class="pub">
+          <div class="pub-content">
+            Cunningham, E., <span class="me">Zimnicki, C.</span>, &amp; Beck, D. M.
+            <span class="title">The influence of prestimulus 1/f-like versus alpha-band activity on subjective awareness of auditory and visual stimuli.</span>
+            <span class="venue">2023</span>
+          </div>
+          <div class="pub-status">2023</div>
+        </li>
+      </ol>
+    </section>
+
+    <!-- CONTACT -->
+    <section class="contact" id="contact">
+      <div class="section-head">
+        <span class="section-num">§ 04</span>
+        <h2 class="section-title">Get in <em>touch</em></h2>
+      </div>
+
+      <div class="contact-grid">
+        <div>
+          <h3 class="contact-headline">
+            I'm wrapping up my PhD and looking for what's <em>next.</em>
+          </h3>
+          <div class="contact-links">
+            <a class="contact-link" href="mailto:clemzimnicki@gmail.com">
+              <span class="contact-link-label">email</span>
+              <span>clemzimnicki@gmail.com</span>
+              <span class="contact-link-arrow">→</span>
+            </a>
+            <a class="contact-link" href="https://www.linkedin.com/in/clementinezimnicki" target="_blank" rel="noopener">
+              <span class="contact-link-label">linkedin</span>
+              <span>clementinezimnicki</span>
+              <span class="contact-link-arrow">→</span>
+            </a>
+            <a class="contact-link" href="https://github.com/clemzimnicki" target="_blank" rel="noopener">
+              <span class="contact-link-label">github</span>
+              <span>clemzimnicki</span>
+              <span class="contact-link-arrow">→</span>
+            </a>
+            <a class="contact-link" href="https://twitter.com/clem_zimnicki" target="_blank" rel="noopener">
+              <span class="contact-link-label">twitter</span>
+              <span>clem_zimnicki</span>
+              <span class="contact-link-arrow">→</span>
+            </a>
+          </div>
+        </div>
+
+        <aside class="contact-aside">
+          <p><strong style="color: var(--ink); font-weight: 500;">Looking for:</strong> UX research, behavioral / human-factors research, applied research roles. I care about studies that change what someone does, not just what we know.</p>
+          <p><strong style="color: var(--ink); font-weight: 500;">Also:</strong> I bake. Sometimes I post about it on <a href="https://www.instagram.com/clem.zimnicki/" target="_blank" rel="noopener" style="color: var(--accent); text-decoration: underline; text-underline-offset: 3px;">Instagram</a>.</p>
+        </aside>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="colophon">
+      © 2026 Clementine Zimnicki · Set in Fraunces, Manrope &amp; JetBrains Mono · Built with care
+    </div>
+    <div>
+      <a href="#" style="color: var(--ink-faint);">back to top ↑</a>
+    </div>
+  </footer>
+
+  <script>
+    // ─── Triadic similarity demo ───
+    (function() {
+      const trials = [
+        {
+          colors: ['#C53428', '#D85820', '#DE7E18'],
+          reveal: "Around the red–orange boundary, different people group the middle swatch differently. There's no key telling you the right answer — and there isn't one in my experiments either. The disagreement is what carries the information."
+        },
+        {
+          colors: ['#2A8062', '#2A7E9C', '#2A4A98'],
+          reveal: "The blue–green region is one of the most-studied disagreements in color perception. Different languages even partition it differently. Where you grouped these is a small fingerprint of how your visual system chunks this part of color space."
+        },
+        {
+          colors: ['#B43E62', '#A33C7C', '#5A3FB2'],
+          reveal: "Three triplets is a tiny taste. A real study gives you hundreds. Aggregated, those judgments reconstruct each participant's perceptual color space — and across participants, the spaces don't match. Characterizing the structure of how they differ, and whether those differences predict performance on interference and categorization tasks, is what my dissertation does."
+        }
+      ];
+
+      const tripletEl   = document.getElementById('triplet');
+      const counterEl   = document.getElementById('tripletCounter');
+      const nextBtn     = document.getElementById('tripletNext');
+      const resultPanel = document.getElementById('boundaryResult');
+      const resultLabel = document.getElementById('resultLabel');
+      const resultValue = document.getElementById('resultValue');
+      const resultBody  = document.getElementById('resultBody');
+      const swatches    = tripletEl.querySelectorAll('.swatch');
+
+      let current = 0;
+
+      function renderTrial(idx) {
+        const t = trials[idx];
+        swatches.forEach((s, i) => {
+          s.style.background = t.colors[i];
+          s.classList.remove('selected');
+        });
+        counterEl.textContent = `trial ${idx + 1} / ${trials.length}`;
+        nextBtn.disabled = true;
+        resultPanel.classList.remove('shown');
+      }
+
+      function handleSelect(swatch) {
+        swatches.forEach(s => s.classList.remove('selected'));
+        swatch.classList.add('selected');
+
+        const letter = ['A', 'B', 'C'][parseInt(swatch.dataset.idx, 10)];
+        resultLabel.textContent = `your choice — trial ${current + 1}`;
+        resultValue.textContent = `You picked color ${letter} as the odd one out.`;
+        resultBody.textContent = trials[current].reveal;
+        resultPanel.classList.add('shown');
+
+        if (current < trials.length - 1) {
+          nextBtn.disabled = false;
+          nextBtn.textContent = 'try another →';
+        } else {
+          nextBtn.disabled = true;
+          nextBtn.textContent = '— end of demo —';
+        }
+      }
+
+      tripletEl.addEventListener('click', (e) => {
+        const sw = e.target.closest('.swatch');
+        if (sw) handleSelect(sw);
+      });
+
+      nextBtn.addEventListener('click', () => {
+        if (current < trials.length - 1) {
+          current++;
+          renderTrial(current);
+        }
+      });
+
+      renderTrial(0);
+    })();
+
+    // ─── Scroll reveals ───
+    (function() {
+      if (!('IntersectionObserver' in window)) {
+        document.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
+        return;
+      }
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in');
+            io.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+      document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+      // Reveal-on-scroll for sections not explicitly marked
+      document.querySelectorAll('.section-head, .area, .cred-item, .pub, .contact-link, .contact-headline, .contact-aside')
+        .forEach((el, i) => {
+          el.classList.add('reveal');
+          if (i % 4) el.classList.add('reveal-delay-' + (i % 4));
+          io.observe(el);
+        });
+    })();
+  </script>
+</body>
+</html>
