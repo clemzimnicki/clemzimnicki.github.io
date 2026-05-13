@@ -78,7 +78,6 @@
       pointer-events: none;
       z-index: -1;
       display: block;
-      overflow: visible;
     }
     @media (prefers-reduced-motion: reduce) {
       .ribbon { display: none; }
@@ -996,7 +995,7 @@
   </header>
 
   <main>
-    <svg class="ribbon" aria-hidden="true" preserveAspectRatio="none"></svg>
+    <canvas class="ribbon" aria-hidden="true"></canvas>
 
     <!-- HERO -->
     <section class="hero">
@@ -1436,7 +1435,7 @@
         });
     })();
 
-    // ─── Snaking sand-grain ribbon ───
+    // ─── Snaking sand-grain ribbon (canvas) ───
     (function() {
       const SVG_NS = 'http://www.w3.org/2000/svg';
       const PALETTE = [
@@ -1452,9 +1451,11 @@
       const CORNER_RADIUS = 60;  // rounding radius at each corner
 
       const main = document.querySelector('main');
-      const svg = main && main.querySelector('.ribbon');
-      if (!main || !svg) return;
+      const canvas = main && main.querySelector('canvas.ribbon');
+      if (!main || !canvas) return;
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      const ctx = canvas.getContext('2d');
 
       function hexToRgb(hex) {
         const m = hex.match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i);
@@ -1462,47 +1463,86 @@
       }
       const PALETTE_RGB = PALETTE.map(hexToRgb);
 
-      function build() {
-        // Clear previous render
-        while (svg.firstChild) svg.removeChild(svg.firstChild);
+      // Reusable hidden SVG path for arc-length measurement (off-screen but in the DOM)
+      const measureSvg = document.createElementNS(SVG_NS, 'svg');
+      measureSvg.setAttribute('width', '0');
+      measureSvg.setAttribute('height', '0');
+      measureSvg.style.position = 'absolute';
+      measureSvg.style.left = '-9999px';
+      measureSvg.style.pointerEvents = 'none';
+      const measurePath = document.createElementNS(SVG_NS, 'path');
+      measureSvg.appendChild(measurePath);
+      document.body.appendChild(measureSvg);
 
+      function buildPath(points, radius) {
+        if (points.length < 2) return '';
+        const f = (n) => n.toFixed(2);
+        const parts = [`M${f(points[0].x)},${f(points[0].y)}`];
+        for (let i = 1; i < points.length - 1; i++) {
+          const prev = points[i - 1], curr = points[i], next = points[i + 1];
+          const inDx = prev.x - curr.x, inDy = prev.y - curr.y;
+          const outDx = next.x - curr.x, outDy = next.y - curr.y;
+          const inLen = Math.hypot(inDx, inDy) || 1;
+          const outLen = Math.hypot(outDx, outDy) || 1;
+          const r = Math.min(radius, inLen / 2, outLen / 2);
+          const ax = curr.x + (inDx / inLen) * r;
+          const ay = curr.y + (inDy / inLen) * r;
+          const ex = curr.x + (outDx / outLen) * r;
+          const ey = curr.y + (outDy / outLen) * r;
+          parts.push(`L${f(ax)},${f(ay)}`);
+          parts.push(`Q${f(curr.x)},${f(curr.y)} ${f(ex)},${f(ey)}`);
+        }
+        const last = points[points.length - 1];
+        parts.push(`L${f(last.x)},${f(last.y)}`);
+        return parts.join(' ');
+      }
+
+      function build() {
         const sections = main.querySelectorAll('section');
         if (sections.length < 2) return;
 
         const W = main.offsetWidth;
         const H = main.offsetHeight;
-        svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+        // Cap DPR at 2 — most retina screens; higher just balloons memory for sub-pixel circles
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        canvas.width  = Math.max(1, Math.round(W * dpr));
+        canvas.height = Math.max(1, Math.round(H * dpr));
+        canvas.style.width  = W + 'px';
+        canvas.style.height = H + 'px';
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.clearRect(0, 0, W, H);
 
         const sectionTops = Array.from(sections).map(s => s.offsetTop);
         const INSET = Math.max(18, Math.min(W * 0.025, 50));
         const rightX = W - INSET;
         const leftX  = INSET;
 
-        // Build snake corner-points
+        // Snake corner-points
         const pts = [];
-        let cx = rightX;
-        pts.push({ x: cx, y: 0 });
+        let cx0 = rightX;
+        pts.push({ x: cx0, y: 0 });
         for (let i = 1; i < sectionTops.length; i++) {
-          pts.push({ x: cx, y: sectionTops[i] });
-          cx = (cx === rightX) ? leftX : rightX;
-          pts.push({ x: cx, y: sectionTops[i] });
+          pts.push({ x: cx0, y: sectionTops[i] });
+          cx0 = (cx0 === rightX) ? leftX : rightX;
+          pts.push({ x: cx0, y: sectionTops[i] });
         }
-        pts.push({ x: cx, y: H });
+        pts.push({ x: cx0, y: H });
 
-        // Cumulative arc length at each vertex
+        // Measure the rounded path
+        measurePath.setAttribute('d', buildPath(pts, CORNER_RADIUS));
+        const totalLength = measurePath.getTotalLength();
+
+        // Polyline arc length for anchor placement, scaled to the real (curved) length
         const cumD = [0];
         for (let i = 1; i < pts.length; i++) {
           cumD.push(cumD[i-1] + Math.hypot(pts[i].x - pts[i-1].x, pts[i].y - pts[i-1].y));
         }
-        const totalLength = cumD[cumD.length - 1];
-
-        // Color anchors at midpoint of each section's vertical segment.
-        // Section i's vertical runs from pts[2*i] to pts[2*i+1].
+        const scale = totalLength / cumD[cumD.length - 1];
         const anchors = [];
         for (let i = 0; i < sectionTops.length; i++) {
           const a = 2 * i;
           const b = Math.min(2 * i + 1, pts.length - 1);
-          anchors.push((cumD[a] + cumD[b]) / 2);
+          anchors.push(((cumD[a] + cumD[b]) / 2) * scale);
         }
 
         function colorAt(d) {
@@ -1518,70 +1558,33 @@
           return PALETTE_RGB[PALETTE_RGB.length - 1];
         }
 
-        // Build path string with rounded corners (quadratic Bezier at each vertex)
-        function buildPath(points, radius) {
-          if (points.length < 2) return '';
-          const f = (n) => n.toFixed(2);
-          const parts = [`M${f(points[0].x)},${f(points[0].y)}`];
-          for (let i = 1; i < points.length - 1; i++) {
-            const prev = points[i - 1], curr = points[i], next = points[i + 1];
-            const inDx = prev.x - curr.x, inDy = prev.y - curr.y;
-            const outDx = next.x - curr.x, outDy = next.y - curr.y;
-            const inLen = Math.hypot(inDx, inDy) || 1;
-            const outLen = Math.hypot(outDx, outDy) || 1;
-            const r = Math.min(radius, inLen / 2, outLen / 2);
-            const ax = curr.x + (inDx / inLen) * r;
-            const ay = curr.y + (inDy / inLen) * r;
-            const ex = curr.x + (outDx / outLen) * r;
-            const ey = curr.y + (outDy / outLen) * r;
-            parts.push(`L${f(ax)},${f(ay)}`);
-            parts.push(`Q${f(curr.x)},${f(curr.y)} ${f(ex)},${f(ey)}`);
-          }
-          const last = points[points.length - 1];
-          parts.push(`L${f(last.x)},${f(last.y)}`);
-          return parts.join(' ');
-        }
-
-        // Build invisible path for measurement
-        const measurePath = document.createElementNS(SVG_NS, 'path');
-        const d = buildPath(pts, CORNER_RADIUS);
-        measurePath.setAttribute('d', d);
-        measurePath.setAttribute('fill', 'none');
-        measurePath.setAttribute('stroke', 'none');
-        svg.appendChild(measurePath);
-
-        const frag = document.createDocumentFragment();
-        const seed = () => Math.random();
+        const seed = Math.random;
+        const TWO_PI = Math.PI * 2;
 
         for (let dist = 0; dist <= totalLength; dist += STEP) {
-          const p = measurePath.getPointAtLength(dist);
+          const p  = measurePath.getPointAtLength(dist);
           const p2 = measurePath.getPointAtLength(Math.min(dist + 0.5, totalLength));
           const dx = p2.x - p.x, dy = p2.y - p.y;
           const len = Math.hypot(dx, dy) || 1;
           const nx = -dy / len, ny = dx / len; // perpendicular unit vector
 
           const [r, g, b] = colorAt(dist);
-          const fill = `rgb(${r|0}, ${g|0}, ${b|0})`;
+          const r255 = r | 0, g255 = g | 0, b255 = b | 0;
 
           for (let k = 0; k < DOTS_PER_STEP; k++) {
-            // Use a triangular-ish distribution so density is highest near the center of the band
             const off = ((seed() + seed()) / 2 - 0.5) * BAND_WIDTH;
             const par = (seed() - 0.5) * STEP;
             const cx2 = p.x + nx * off + (dx / len) * par;
             const cy2 = p.y + ny * off + (dy / len) * par;
+            const radius  = 0.5 + seed() * 1.3;
+            const opacity = 0.5 + seed() * 0.45;
 
-            const c = document.createElementNS(SVG_NS, 'circle');
-            c.setAttribute('cx', cx2.toFixed(2));
-            c.setAttribute('cy', cy2.toFixed(2));
-            c.setAttribute('r',  (0.5 + seed() * 1.3).toFixed(2));
-            c.setAttribute('fill', fill);
-            c.setAttribute('fill-opacity', (0.5 + seed() * 0.45).toFixed(2));
-            frag.appendChild(c);
+            ctx.fillStyle = `rgba(${r255},${g255},${b255},${opacity.toFixed(3)})`;
+            ctx.beginPath();
+            ctx.arc(cx2, cy2, radius, 0, TWO_PI);
+            ctx.fill();
           }
         }
-
-        svg.appendChild(frag);
-        measurePath.remove();
       }
 
       let rafToken = null;
@@ -1590,7 +1593,17 @@
         rafToken = requestAnimationFrame(build);
       }
 
-      build();
+      // Defer the first paint until the browser is idle, so the page becomes
+      // interactive before the ribbon draws.
+      const kick = () => {
+        if ('requestIdleCallback' in window) {
+          requestIdleCallback(build, { timeout: 500 });
+        } else {
+          setTimeout(build, 50);
+        }
+      };
+
+      kick();
       // Rebuild after images/fonts load (page height shifts)
       window.addEventListener('load', () => setTimeout(build, 100));
       // Debounced resize
