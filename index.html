@@ -626,43 +626,155 @@
       .area-tag { padding-top: 0; }
     }
 
-    /* ─────────────  CREDENTIALS  ───────────── */
-    .credentials {
+    /* ─────────────  RESUME  ───────────── */
+    .resume {
       padding: var(--section-y) var(--gutter);
       max-width: 1400px;
       margin: 0 auto;
       border-top: 1px solid var(--rule);
     }
 
-    .cred-grid {
+    .resume-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: clamp(1.5rem, 4vw, 3rem);
-      margin-top: 3rem;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.45fr);
+      gap: clamp(2rem, 5vw, 4rem);
+      align-items: start;
     }
-    .cred-item {
-      border-top: 2px solid var(--ink);
-      padding-top: 1rem;
+
+    @media (max-width: 880px) {
+      .resume-grid {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+      }
     }
-    .cred-label {
+
+    .resume-block + .resume-block {
+      margin-top: 2.25rem;
+    }
+    .resume-h3 {
       font-family: 'JetBrains Mono', monospace;
       font-size: var(--fs-mono);
-      letter-spacing: 0.15em;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
       color: var(--ink-soft);
-      margin-bottom: 0.5rem;
+      padding-bottom: 0.6rem;
+      margin-bottom: 1.1rem;
+      border-bottom: 1px solid var(--rule);
     }
-    .cred-value {
+
+    .resume-entry + .resume-entry {
+      margin-top: 1rem;
+    }
+    .resume-org {
       font-family: 'Quicksand', sans-serif;
-      font-size: 1.15rem;
-      font-weight: 400;
+      font-weight: 500;
+      font-size: 1.02rem;
       line-height: 1.3;
+      color: var(--ink);
     }
-    .cred-value-mute {
-      color: var(--ink-soft);
+    .resume-line {
       font-size: var(--fs-small);
-      font-family: 'Manrope', sans-serif;
-      margin-top: 0.3rem;
+      line-height: 1.45;
+      color: var(--ink-soft);
+      margin-top: 0.2rem;
+    }
+    .resume-line em {
+      font-style: italic;
+      color: var(--ink);
+    }
+    .resume-line-mute {
+      font-size: var(--fs-small);
+      line-height: 1.4;
+      color: var(--ink-faint);
+      margin-top: 0.15rem;
+      font-style: italic;
+    }
+
+    .resume-skills {
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+    }
+    .resume-skill-label {
+      font-family: 'Quicksand', sans-serif;
+      font-weight: 500;
+      font-size: 0.95rem;
+      color: var(--ink);
+      margin-bottom: 0.15rem;
+    }
+    .resume-skill-list {
+      font-size: var(--fs-small);
+      line-height: 1.5;
+      color: var(--ink-soft);
+    }
+
+    .resume-job + .resume-job {
+      margin-top: 1.6rem;
+      padding-top: 1.6rem;
+      border-top: 1px dashed var(--rule);
+    }
+    .resume-role {
+      font-family: 'Quicksand', sans-serif;
+      font-weight: 500;
+      font-size: 1.1rem;
+      line-height: 1.25;
+      color: var(--ink);
+    }
+    .resume-job-where {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: var(--fs-mono);
+      letter-spacing: 0.08em;
+      color: var(--ink-soft);
+      margin-top: 0.2rem;
+      margin-bottom: 0.65rem;
+    }
+    .resume-bullets {
+      list-style: none;
+      padding: 0;
+    }
+    .resume-bullets li {
+      position: relative;
+      padding-left: 1.1rem;
+      font-size: var(--fs-small);
+      line-height: 1.55;
+      color: var(--ink-soft);
+      margin-top: 0.35rem;
+    }
+    .resume-bullets li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.62em;
+      width: 0.4rem;
+      height: 1px;
+      background: var(--accent);
+    }
+
+    .resume-download {
+      margin-top: 3rem;
+      display: flex;
+      justify-content: flex-start;
+    }
+    .resume-download a {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: var(--fs-mono);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink);
+      padding: 0.75rem 1.1rem;
+      border: 1px solid var(--ink);
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+    .resume-download a:hover {
+      background-color: var(--ink);
+      color: var(--paper);
+    }
+    .resume-download a:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
     }
 
     /* ─────────────  PUBLICATIONS  ───────────── */
@@ -865,7 +977,7 @@
     </div>
     <nav class="primary" aria-label="primary">
       <a href="#work">work</a>
-      <a href="#cv">cv</a>
+      <a href="#resume">resume</a>
       <a href="#publications">publications</a>
     </nav>
   </header>
@@ -1005,44 +1117,143 @@
       </div>
     </section>
 
-    <!-- CREDENTIALS -->
-    <section class="credentials" id="cv">
+    <!-- RESUME -->
+    <section class="resume" id="resume">
       <div class="section-head">
         <span class="section-num">§ 02</span>
-        <h2 class="section-title">At a <em>glance</em></h2>
+        <h2 class="section-title"><em>Resume</em></h2>
       </div>
 
-      <div class="cred-grid">
-        <div class="cred-item">
-          <div class="cred-label">current</div>
-          <div class="cred-value">PhD candidate, Psychology</div>
-          <div class="cred-value-mute">University of Wisconsin–Madison · Knowledge &amp; Concepts Lab · expected Dec 2026</div>
+      <div class="resume-grid">
+        <aside class="resume-side">
+          <div class="resume-block">
+            <h3 class="resume-h3">Education</h3>
+            <div class="resume-entry">
+              <div class="resume-org">University of Wisconsin–Madison</div>
+              <div class="resume-line">Ph.D., Psychology · May 2025</div>
+              <div class="resume-line">M.A., Psychology · May 2022</div>
+            </div>
+            <div class="resume-entry">
+              <div class="resume-org">University of Illinois at Urbana–Champaign</div>
+              <div class="resume-line">B.S., Psychology · 2020</div>
+            </div>
+          </div>
+
+          <div class="resume-block">
+            <h3 class="resume-h3">Skills</h3>
+            <div class="resume-skills">
+              <div class="resume-skill-group">
+                <div class="resume-skill-label">Research methods</div>
+                <div class="resume-skill-list">Mixed methods · A/B testing · Human factors · Electroencephalography (EEG)</div>
+              </div>
+              <div class="resume-skill-group">
+                <div class="resume-skill-label">Experimental programming</div>
+                <div class="resume-skill-list">JavaScript · HTML · jsPsych · GitHub · LaTeX · MATLAB</div>
+              </div>
+              <div class="resume-skill-group">
+                <div class="resume-skill-label">Design</div>
+                <div class="resume-skill-list">Adobe CC · Sketching</div>
+              </div>
+              <div class="resume-skill-group">
+                <div class="resume-skill-label">Communication</div>
+                <div class="resume-skill-list">Quantitative data visualization · Scientific writing · Teaching &amp; mentoring writing · Research talks</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="resume-block">
+            <h3 class="resume-h3">Conference talks</h3>
+            <div class="resume-entry">
+              <div class="resume-org">Vision Sciences Society · 2023</div>
+              <div class="resume-line">Zimnicki, C., Szafir, D. A., &amp; Schloss, K. B. <em>Hue variation masks effects of lightness on interpretations of colormap data visualizations.</em></div>
+            </div>
+            <div class="resume-entry">
+              <div class="resume-org">Vision Sciences Society · 2022</div>
+              <div class="resume-line">Zimnicki, C. &amp; Schloss, K. B. <em>Squares vs. Maps: effects of configuration on the dark-is-more bias?</em></div>
+            </div>
+            <div class="resume-entry">
+              <div class="resume-org">Psychonomic Society · 2020</div>
+              <div class="resume-line">Zimnicki, C., Cunningham, E., &amp; Beck, D. M. <em>Spontaneous pre-stimulus alpha activity predicts visual, but not auditory, attention.</em></div>
+            </div>
+          </div>
+
+          <div class="resume-block">
+            <h3 class="resume-h3">Honors &amp; awards</h3>
+            <div class="resume-entry">
+              <div class="resume-org">Student Research Grants Competition Funds · 2023</div>
+              <div class="resume-line-mute">University of Wisconsin–Madison</div>
+            </div>
+            <div class="resume-entry">
+              <div class="resume-org">Vision Sciences Society Travel Award · 2023</div>
+              <div class="resume-line-mute">Vision Sciences Society</div>
+            </div>
+            <div class="resume-entry">
+              <div class="resume-org">Kenzi Valentyn Vision Research Grant · 2021</div>
+              <div class="resume-line-mute">University of Wisconsin–Madison</div>
+            </div>
+            <div class="resume-entry">
+              <div class="resume-org">Michael Coles Award for Cognitive Neuroscience Research · 2019</div>
+              <div class="resume-line-mute">University of Illinois at Urbana–Champaign</div>
+            </div>
+            <div class="resume-entry">
+              <div class="resume-org">Carle Neuroscience Institute Undergraduate Research Award · 2019</div>
+              <div class="resume-line-mute">University of Illinois at Urbana–Champaign</div>
+            </div>
+          </div>
+        </aside>
+
+        <div class="resume-main">
+          <div class="resume-block">
+            <h3 class="resume-h3">Experience</h3>
+
+            <div class="resume-job">
+              <div class="resume-role">Graduate Research Scientist</div>
+              <div class="resume-job-where">University of Wisconsin–Madison · Aug 2020 – Present</div>
+              <ul class="resume-bullets">
+                <li>Lead 4+ studies on cognition and data visualization</li>
+                <li>Collect data from 1,300+ participants at a time leveraging large-scale crowdsourcing (mTurk)</li>
+                <li>Perform statistical analyses (mixed-effects models, GLM) and generate data visualizations (ggplot, Adobe Illustrator) for talks and publications</li>
+                <li>Communicate findings through posters, writing, and talks</li>
+                <li>Teach classes of 500+ undergraduate students covering research methods, introductory psychology, child development</li>
+              </ul>
+            </div>
+
+            <div class="resume-job">
+              <div class="resume-role">Head of Donor Relations</div>
+              <div class="resume-job-where">UW–Madison Psychology Colloquium Committee · Aug 2022 – Present</div>
+              <ul class="resume-bullets">
+                <li>Communicate directly and maintain relationships with donors</li>
+                <li>Lead fundraising efforts by applying for and receiving $2,000+ yearly</li>
+              </ul>
+            </div>
+
+            <div class="resume-job">
+              <div class="resume-role">VisXVision Workshop Organizer</div>
+              <div class="resume-job-where">Conference locations vary · Nov 2022 – Present</div>
+              <ul class="resume-bullets">
+                <li>Collaborate with other researchers to host conference workshops that connect vision scientists with visualization scientists, and highlight current projects in each field</li>
+                <li>Manage logistics of event planning: budget, invited speaker talks, publicity, and day-of event coordination</li>
+              </ul>
+            </div>
+
+            <div class="resume-job">
+              <div class="resume-role">Undergraduate Research Assistant</div>
+              <div class="resume-job-where">University of Illinois at Urbana–Champaign · Sep 2018 – May 2020</div>
+              <ul class="resume-bullets">
+                <li>Assisted with collecting EEG data from 50+ participants</li>
+                <li>Led an EEG study investigating visual perception and attention</li>
+                <li>Presented at Society for Psychophysiological Research meeting (2020)</li>
+              </ul>
+            </div>
+          </div>
         </div>
-        <div class="cred-item">
-          <div class="cred-label">also</div>
-          <div class="cred-value">R&amp;D Intern</div>
-          <div class="cred-value-mute">Sandia National Laboratories · since June 2024</div>
-        </div>
-        <div class="cred-item">
-          <div class="cred-label">before</div>
-          <div class="cred-value">B.S. Psychology (Cognitive Neuroscience)</div>
-          <div class="cred-value-mute">University of Illinois Urbana–Champaign · 2020</div>
-        </div>
-        <div class="cred-item">
-          <div class="cred-label">methods</div>
-          <div class="cred-value">Mixed-methods, end-to-end</div>
-          <div class="cred-value-mute">Experimental design, 1:1 interviews, surveys (Qualtrics), A/B testing, mixed-effects models, GLM, large-N crowdsourcing</div>
-        </div>
-        <div class="cred-item">
-          <div class="cred-label">tools</div>
-          <div class="cred-value">R, Python, JavaScript, jsPsych</div>
-          <div class="cred-value-mute">SQL, MATLAB, LaTeX, Adobe CC, Qualtrics, GitHub</div>
-        </div>
-        <div class="cred-item">
-          <div class="cred-label">also organizes</div>
-          <div class="cred-value">VisXVision Workshop</div>
-          <div class="cred-value-mute">Annual workshop at Vision Sciences Society &amp; IEEE VIS, connecting vision scientists with viz researchers</div>
-        </div>
+      </div>
+
+      <div class="resume-download">
+        <a href="assets/pdf/czimnicki_resume.pdf" target="_blank" rel="noopener">
+          <span>Download as PDF</span>
+          <span aria-hidden="true">↓</span>
+        </a>
       </div>
     </section>
 
@@ -1109,19 +1320,19 @@
       // Hex codes (no '#') correspond to files in assets/color_triplets/<HEX>.png.
       const trials = [
         {
-          example: 'EA1D1D',
-          options: ['E81A4B', 'CC4F1B'],
-          reveal: "Right at the red boundary, people split. Whether this vivid red feels closer to a pink-tinged red or an orange-tinged red depends on how your visual system carves up this part of color space — and on language, context, and recent exposure."
+          example: '72005E',
+          options: ['B8509E', '1C3D61'],
+          reveal: "When judging color similarity, people split. To most people, colors of the same hue are more similar, and here they'd choose the light purple. A minority judge color similarity based on lightness, and would choose the dark blue as more similar."
         },
         {
           example: 'DB1F9D',
           options: ['E31B73', 'B8509E'],
-          reveal: "Pink and magenta sit on either side of a fuzzy boundary. Two participants looking at the same hot pink will reliably disagree about which neighbor it belongs with. That disagreement is the signal — not noise."
+          reveal: "Pink and magenta sit on either side of a fuzzy boundary. Two participants looking at the same hot pink will reliably disagree about which neighbor it belongs with."
         },
         {
           example: 'F7A75A',
           options: ['F1A78A', 'FBA714'],
-          reveal: "Three trials is a tiny taste. A real study gives you hundreds. Aggregated, those judgments reconstruct each participant's perceptual color space — and across participants, the spaces don't match. Characterizing the structure of those differences, and whether they predict performance on interference and categorization tasks, is what my dissertation does."
+          reveal: "In my studies, participants do hundreds of these trials, for nearly 60 colors. Aggregated, those judgments reconstruct each participant's perceptual color space — and across participants, the spaces don't match. Characterizing the structure of those differences, and whether they predict performance on interference and categorization tasks, is what my dissertation does."
         }
       ];
 
@@ -1203,7 +1414,7 @@
       document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
       // Reveal-on-scroll for sections not explicitly marked
-      document.querySelectorAll('.section-head, .area, .cred-item, .pub, .contact-link, .contact-headline, .contact-aside')
+      document.querySelectorAll('.section-head, .area, .resume-block, .resume-job, .pub, .contact-link, .contact-headline, .contact-aside')
         .forEach((el, i) => {
           el.classList.add('reveal');
           if (i % 4) el.classList.add('reveal-delay-' + (i % 4));
