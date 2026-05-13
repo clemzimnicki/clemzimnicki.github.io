@@ -1445,8 +1445,8 @@
         '#6B8C5A',  // muted green
         '#5A7A9E'   // muted blue
       ];
-      const STEP = 1.6;          // px between samples along path
-      const DOTS_PER_STEP = 14;  // dots scattered per sample
+      const STEP = 2.2;          // px between samples along path
+      const DOTS_PER_STEP = 9;   // dots scattered per sample
       const BAND_WIDTH = 66;     // ribbon thickness in px
       const CORNER_RADIUS = 60;  // rounding radius at each corner
 
@@ -1503,8 +1503,9 @@
 
         const W = main.offsetWidth;
         const H = main.offsetHeight;
-        // Cap DPR at 2 — most retina screens; higher just balloons memory for sub-pixel circles
-        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        // DPR pinned to 1: a tall (~5000px+) page at DPR 2 is a 100+ MB canvas
+        // buffer that kills load. Dots are organic enough that 1× looks fine.
+        const dpr = 1;
         canvas.width  = Math.max(1, Math.round(W * dpr));
         canvas.height = Math.max(1, Math.round(H * dpr));
         canvas.style.width  = W + 'px';
@@ -1559,7 +1560,6 @@
         }
 
         const seed = Math.random;
-        const TWO_PI = Math.PI * 2;
 
         for (let dist = 0; dist <= totalLength; dist += STEP) {
           const p  = measurePath.getPointAtLength(dist);
@@ -1576,13 +1576,12 @@
             const par = (seed() - 0.5) * STEP;
             const cx2 = p.x + nx * off + (dx / len) * par;
             const cy2 = p.y + ny * off + (dy / len) * par;
-            const radius  = 0.5 + seed() * 1.3;
+            // Tiny squares — at this scale (~1–3px), visually identical to circles,
+            // but ~5–10× cheaper to draw than arc() + fill() per dot.
+            const size = 1.0 + seed() * 2.4;
             const opacity = 0.5 + seed() * 0.45;
-
             ctx.fillStyle = `rgba(${r255},${g255},${b255},${opacity.toFixed(3)})`;
-            ctx.beginPath();
-            ctx.arc(cx2, cy2, radius, 0, TWO_PI);
-            ctx.fill();
+            ctx.fillRect(cx2 - size / 2, cy2 - size / 2, size, size);
           }
         }
       }
