@@ -1445,10 +1445,12 @@
         '#6B8C5A',  // muted green
         '#5A7A9E'   // muted blue
       ];
-      const STEP = 2.2;          // px between samples along path
-      const DOTS_PER_STEP = 9;   // dots scattered per sample
+      const STEP = 4;            // px between samples along path
+      const DOTS_PER_STEP = 4;   // dots scattered per sample
       const BAND_WIDTH = 66;     // ribbon thickness in px
       const CORNER_RADIUS = 60;  // rounding radius at each corner
+      const TILE_MIN = 4;        // pixel-tile size: lower bound (px)
+      const TILE_MAX = 9;        // pixel-tile size: upper bound (px)
 
       const main = document.querySelector('main');
       const canvas = main && main.querySelector('canvas.ribbon');
@@ -1576,10 +1578,11 @@
             const par = (seed() - 0.5) * STEP;
             const cx2 = p.x + nx * off + (dx / len) * par;
             const cy2 = p.y + ny * off + (dy / len) * par;
-            // Tiny squares — at this scale (~1–3px), visually identical to circles,
-            // but ~5–10× cheaper to draw than arc() + fill() per dot.
-            const size = 1.0 + seed() * 2.4;
-            const opacity = 0.5 + seed() * 0.45;
+            // Pixel-tile mode: a few bigger squares per sample instead of a
+            // sand-cloud of tiny ones. Same draw-call cost per tile, but each
+            // tile covers ~10× the area of a 1–3px dot.
+            const size = TILE_MIN + seed() * (TILE_MAX - TILE_MIN);
+            const opacity = 0.55 + seed() * 0.4;
             ctx.fillStyle = `rgba(${r255},${g255},${b255},${opacity.toFixed(3)})`;
             ctx.fillRect(cx2 - size / 2, cy2 - size / 2, size, size);
           }
