@@ -68,6 +68,22 @@
 
     main, header, footer { position: relative; z-index: 2; }
 
+    /* ─────────────  RIBBON  ───────────── */
+    .ribbon {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+      display: block;
+      overflow: visible;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .ribbon { display: none; }
+    }
+
     a {
       color: var(--ink);
       text-decoration: none;
@@ -983,6 +999,7 @@
   </header>
 
   <main>
+    <svg class="ribbon" aria-hidden="true" preserveAspectRatio="none"></svg>
 
     <!-- HERO -->
     <section class="hero">
@@ -1321,12 +1338,12 @@
       const trials = [
         {
           example: 'DB1F9D',
-          options: ['E31B73', 'B8509E'],
+          options: ['E31B73', '90689F'],
           reveal: "My work shows that people differ in how they think about colors. Not only that, but there's also structure in that variation: people fall into groups based on the choices they make in this task."
         },
         {
-          example: '72005E',
-          options: ['B8509E', '1C3D61'],
+          example: 'C94E4B',
+          options: ['E6A8B7', '1C3D61'],
           reveal: "When judging color similarity, people split. To most people, colors of the same hue are more similar, and here they'd choose the light purple. A minority judge color similarity based on lightness, and would choose the dark blue as more similar to the dark purple."
         },
         {
@@ -1420,6 +1437,146 @@
           if (i % 4) el.classList.add('reveal-delay-' + (i % 4));
           io.observe(el);
         });
+    })();
+
+    // ─── Snaking sand-grain ribbon ───
+    (function() {
+      const SVG_NS = 'http://www.w3.org/2000/svg';
+      const PALETTE = [
+        '#A85567',  // muted red
+        '#C77A4A',  // muted orange
+        '#C7A04A',  // muted ochre / yellow
+        '#6B8C5A',  // muted green
+        '#5A7A9E'   // muted blue
+      ];
+      const STEP = 2.5;          // px between samples along path
+      const DOTS_PER_STEP = 5;   // dots scattered per sample
+      const BAND_WIDTH = 22;     // ribbon thickness in px
+
+      const main = document.querySelector('main');
+      const svg = main && main.querySelector('.ribbon');
+      if (!main || !svg) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      function hexToRgb(hex) {
+        const m = hex.match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i);
+        return m ? [parseInt(m[1],16), parseInt(m[2],16), parseInt(m[3],16)] : [0,0,0];
+      }
+      const PALETTE_RGB = PALETTE.map(hexToRgb);
+
+      function build() {
+        // Clear previous render
+        while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+        const sections = main.querySelectorAll('section');
+        if (sections.length < 2) return;
+
+        const W = main.offsetWidth;
+        const H = main.offsetHeight;
+        svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+
+        const sectionTops = Array.from(sections).map(s => s.offsetTop);
+        const INSET = Math.max(18, Math.min(W * 0.025, 50));
+        const rightX = W - INSET;
+        const leftX  = INSET;
+
+        // Build snake corner-points
+        const pts = [];
+        let cx = rightX;
+        pts.push({ x: cx, y: 0 });
+        for (let i = 1; i < sectionTops.length; i++) {
+          pts.push({ x: cx, y: sectionTops[i] });
+          cx = (cx === rightX) ? leftX : rightX;
+          pts.push({ x: cx, y: sectionTops[i] });
+        }
+        pts.push({ x: cx, y: H });
+
+        // Cumulative arc length at each vertex
+        const cumD = [0];
+        for (let i = 1; i < pts.length; i++) {
+          cumD.push(cumD[i-1] + Math.hypot(pts[i].x - pts[i-1].x, pts[i].y - pts[i-1].y));
+        }
+        const totalLength = cumD[cumD.length - 1];
+
+        // Color anchors at midpoint of each section's vertical segment.
+        // Section i's vertical runs from pts[2*i] to pts[2*i+1].
+        const anchors = [];
+        for (let i = 0; i < sectionTops.length; i++) {
+          const a = 2 * i;
+          const b = Math.min(2 * i + 1, pts.length - 1);
+          anchors.push((cumD[a] + cumD[b]) / 2);
+        }
+
+        function colorAt(d) {
+          if (d <= anchors[0]) return PALETTE_RGB[0];
+          if (d >= anchors[anchors.length - 1]) return PALETTE_RGB[PALETTE_RGB.length - 1];
+          for (let i = 0; i < anchors.length - 1; i++) {
+            if (d <= anchors[i+1]) {
+              const f = (d - anchors[i]) / (anchors[i+1] - anchors[i]);
+              const c0 = PALETTE_RGB[i], c1 = PALETTE_RGB[i+1];
+              return [c0[0] + (c1[0]-c0[0])*f, c0[1] + (c1[1]-c0[1])*f, c0[2] + (c1[2]-c0[2])*f];
+            }
+          }
+          return PALETTE_RGB[PALETTE_RGB.length - 1];
+        }
+
+        // Build invisible path for measurement
+        const measurePath = document.createElementNS(SVG_NS, 'path');
+        const d = pts.map((p, i) => (i === 0 ? 'M' : 'L') + p.x.toFixed(2) + ',' + p.y.toFixed(2)).join(' ');
+        measurePath.setAttribute('d', d);
+        measurePath.setAttribute('fill', 'none');
+        measurePath.setAttribute('stroke', 'none');
+        svg.appendChild(measurePath);
+
+        const frag = document.createDocumentFragment();
+        const seed = () => Math.random();
+
+        for (let dist = 0; dist <= totalLength; dist += STEP) {
+          const p = measurePath.getPointAtLength(dist);
+          const p2 = measurePath.getPointAtLength(Math.min(dist + 0.5, totalLength));
+          const dx = p2.x - p.x, dy = p2.y - p.y;
+          const len = Math.hypot(dx, dy) || 1;
+          const nx = -dy / len, ny = dx / len; // perpendicular unit vector
+
+          const [r, g, b] = colorAt(dist);
+          const fill = `rgb(${r|0}, ${g|0}, ${b|0})`;
+
+          for (let k = 0; k < DOTS_PER_STEP; k++) {
+            // Use a triangular-ish distribution so density is highest near the center of the band
+            const off = ((seed() + seed()) / 2 - 0.5) * BAND_WIDTH;
+            const par = (seed() - 0.5) * STEP;
+            const cx2 = p.x + nx * off + (dx / len) * par;
+            const cy2 = p.y + ny * off + (dy / len) * par;
+
+            const c = document.createElementNS(SVG_NS, 'circle');
+            c.setAttribute('cx', cx2.toFixed(2));
+            c.setAttribute('cy', cy2.toFixed(2));
+            c.setAttribute('r',  (0.35 + seed() * 1.0).toFixed(2));
+            c.setAttribute('fill', fill);
+            c.setAttribute('fill-opacity', (0.4 + seed() * 0.5).toFixed(2));
+            frag.appendChild(c);
+          }
+        }
+
+        svg.appendChild(frag);
+        measurePath.remove();
+      }
+
+      let rafToken = null;
+      function scheduleBuild() {
+        if (rafToken) cancelAnimationFrame(rafToken);
+        rafToken = requestAnimationFrame(build);
+      }
+
+      build();
+      // Rebuild after images/fonts load (page height shifts)
+      window.addEventListener('load', () => setTimeout(build, 100));
+      // Debounced resize
+      let resizeTimer;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(scheduleBuild, 200);
+      });
     })();
   </script>
 </body>
