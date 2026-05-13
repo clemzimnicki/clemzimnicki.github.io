@@ -185,7 +185,19 @@
     }
     .hero-title em {
       font-weight: 400;
-      color: var(--accent);
+      color: #A85567;
+      animation: hue-cycle 10s linear infinite;
+    }
+    @keyframes hue-cycle {
+      0%   { color: #A85567; }
+      20%  { color: #2C7DA0; }
+      40%  { color: #7B3D8E; }
+      60%  { color: #D4582A; }
+      80%  { color: #5A8051; }
+      100% { color: #A85567; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .hero-title em { animation: none; }
     }
 
     .hero-lead {
