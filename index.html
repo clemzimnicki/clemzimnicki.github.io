@@ -1449,6 +1449,7 @@
       const STEP = 1.6;          // px between samples along path
       const DOTS_PER_STEP = 14;  // dots scattered per sample
       const BAND_WIDTH = 66;     // ribbon thickness in px
+      const CORNER_RADIUS = 60;  // rounding radius at each corner
 
       const main = document.querySelector('main');
       const svg = main && main.querySelector('.ribbon');
@@ -1517,9 +1518,33 @@
           return PALETTE_RGB[PALETTE_RGB.length - 1];
         }
 
+        // Build path string with rounded corners (quadratic Bezier at each vertex)
+        function buildPath(points, radius) {
+          if (points.length < 2) return '';
+          const f = (n) => n.toFixed(2);
+          const parts = [`M${f(points[0].x)},${f(points[0].y)}`];
+          for (let i = 1; i < points.length - 1; i++) {
+            const prev = points[i - 1], curr = points[i], next = points[i + 1];
+            const inDx = prev.x - curr.x, inDy = prev.y - curr.y;
+            const outDx = next.x - curr.x, outDy = next.y - curr.y;
+            const inLen = Math.hypot(inDx, inDy) || 1;
+            const outLen = Math.hypot(outDx, outDy) || 1;
+            const r = Math.min(radius, inLen / 2, outLen / 2);
+            const ax = curr.x + (inDx / inLen) * r;
+            const ay = curr.y + (inDy / inLen) * r;
+            const ex = curr.x + (outDx / outLen) * r;
+            const ey = curr.y + (outDy / outLen) * r;
+            parts.push(`L${f(ax)},${f(ay)}`);
+            parts.push(`Q${f(curr.x)},${f(curr.y)} ${f(ex)},${f(ey)}`);
+          }
+          const last = points[points.length - 1];
+          parts.push(`L${f(last.x)},${f(last.y)}`);
+          return parts.join(' ');
+        }
+
         // Build invisible path for measurement
         const measurePath = document.createElementNS(SVG_NS, 'path');
-        const d = pts.map((p, i) => (i === 0 ? 'M' : 'L') + p.x.toFixed(2) + ',' + p.y.toFixed(2)).join(' ');
+        const d = buildPath(pts, CORNER_RADIUS);
         measurePath.setAttribute('d', d);
         measurePath.setAttribute('fill', 'none');
         measurePath.setAttribute('stroke', 'none');
