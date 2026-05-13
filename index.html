@@ -1445,9 +1445,9 @@
         '#6B8C5A',  // muted green
         '#5A7A9E'   // muted blue
       ];
-      const TILE_SIZE = 14;        // size of one "pixel" in the ribbon (px)
+      const TILE_SIZE = 14;        // size of one "pixel" in the ribbon (px); originally 14
       const RIBBON_TILES = 5;      // ribbon thickness, in tiles
-      const STEP = TILE_SIZE / 3;  // sample density along path (must be < TILE_SIZE)
+      const STEP = TILE_SIZE / 2;  // sample density along path (must be < TILE_SIZE); originally 3
       const BAND_WIDTH = TILE_SIZE * RIBBON_TILES;
       const CORNER_RADIUS = 60;    // rounding radius at each corner
 
